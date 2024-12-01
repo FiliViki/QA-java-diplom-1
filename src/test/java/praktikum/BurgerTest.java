@@ -1,100 +1,83 @@
 package praktikum;
 
-import org.junit.*;
-
-//import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class BurgerTest {
-
     private Burger burger;
-    private Bun bun;
 
-    @Before
-    public void setUp() {
-        bun = new Bun("Fluoriscent Bun", 988);
-        burger = new Burger();
-        burger.setBuns(bun);
-    }
+    @Mock
+    private Bun bun;
+    @Mock
+    private Ingredient ingredient;
+
+   @Before
+   public void setUp() {
+       burger = new Burger();
+//       Bun bun = new Bun("Fluoriscent Bun", 988);
+//       Burger burger = new Burger();
+//       burger.setBuns(bun);
+   }
 
     @Test
     public void testAddIngredient() {
-        Ingredient ingredient = Mockito.mock(Ingredient.class);
-        when(ingredient.getPrice()).thenReturn(4142f);
-        when(ingredient.getName()).thenReturn("Asteroid Blue Cheese");
-
         burger.addIngredient(ingredient);
-
-        assertEquals(1, burger.ingredients.size());
-        assertEquals("Asteroid Blue Cheese", burger.ingredients.get(0).getName());
-    }
-
-    private void assertEquals(String asteroidBlueCheese, String name) {
-    }
-
-    private void assertEquals(int i, int size) {
+        assertTrue(burger.ingredients.contains(ingredient));
     }
 
     @Test
     public void testRemoveIngredient() {
-        Ingredient ingredient1 = Mockito.mock(Ingredient.class);
-        when(ingredient1.getName()).thenReturn("Asteroid Blue Cheese");
-        burger.addIngredient(ingredient1);
-
-        Ingredient ingredient2 = Mockito.mock(Ingredient.class);
-        when(ingredient2.getName()).thenReturn("Beef Meteorite");
-        burger.addIngredient(ingredient2);
+        burger.addIngredient(ingredient);
+        int initialSize = burger.ingredients.size();
 
         burger.removeIngredient(0);
-
-        assertEquals(1, burger.ingredients.size());
-        assertEquals( "Beef Meteorite", burger.ingredients.get(0).getName());
+        assertEquals(initialSize - 1, burger.ingredients.size());
     }
 
     @Test
     public void testMoveIngredient() {
-        Ingredient ingredient1 = Mockito.mock(Ingredient.class);
-        when(ingredient1.getName()).thenReturn("Beef Meteorite");
+        Ingredient ingredient1 = new Ingredient(IngredientType.SAUCE, "Ketchup", 20.0f);
+        Ingredient ingredient2 = new Ingredient(IngredientType.FILLING, "Meet", 10.0f);
+
         burger.addIngredient(ingredient1);
-
-        Ingredient ingredient2 = Mockito.mock(Ingredient.class);
-        when(ingredient2.getName()).thenReturn("Mini-Salad");
         burger.addIngredient(ingredient2);
-
         burger.moveIngredient(0, 1);
 
-        assertEquals("Mini-Salad", burger.ingredients.get(0).getName());
-        assertEquals("Beef Meteorite", burger.ingredients.get(1).getName());
+        assertEquals(ingredient1, burger.ingredients.get(1));
     }
 
     @Test
     public void testGetPrice() {
-        Ingredient ingredient = Mockito.mock(Ingredient.class);
-        when(ingredient.getPrice()).thenReturn(3000F);
+        Mockito.when(bun.getPrice()).thenReturn(10.0f);
+        burger.setBuns(bun);
         burger.addIngredient(ingredient);
+        Mockito.when(ingredient.getPrice()).thenReturn(20.0f);
 
-        float expectedPrice = bun.getPrice() * 2 + ingredient.getPrice(); // 2.5 * 2 + 3000 = 3005
-        assertEquals(expectedPrice, burger.getPrice(), 0.001);
-    }
-
-    private void assertEquals(float expectedPrice, float price, double v) {
+        float expectedPrice = 2 * 10.0f + 20.0f;
+        assertEquals(expectedPrice, burger.getPrice(), 0.001f);
     }
 
     @Test
     public void testGetReceipt() {
-        Ingredient ingredient = Mockito.mock(Ingredient.class);
-        when(ingredient.getPrice()).thenReturn(3000f);
-        when(ingredient.getName()).thenReturn("Asteroid Blue Cheese");
-        when(ingredient.getType()).thenReturn(IngredientType.FILLING);
+        Mockito.when(bun.getName()).thenReturn("Some bun");
+        Mockito.when(bun.getPrice()).thenReturn(10.0f);
+        burger.setBuns(bun);
 
+        Mockito.when(ingredient.getName()).thenReturn("Some ingredient");
+        Mockito.when(ingredient.getType()).thenReturn(IngredientType.FILLING);
         burger.addIngredient(ingredient);
 
-        String expectedReceipt = "(==== Fluoriscent Bun ====\n" +
-                "= cheese Cheese =\n" +
-                "(==== Fluoriscent Bun ====\n" +
-                "\nPrice: 3005.000000\n"; // 2.5 * 2 + 3000
-        assertEquals(expectedReceipt, burger.getReceipt());
+        String receipt = burger.getReceipt();
+        assertTrue(receipt.contains("Some bun"));
+        assertTrue(receipt.contains("Some ingredient"));
     }
 }

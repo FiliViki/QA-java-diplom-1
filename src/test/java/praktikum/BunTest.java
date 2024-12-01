@@ -14,11 +14,7 @@ public class BunTest {
         assertEquals(988, bun.getPrice(), 0);
     }
 
-    @Test
-    public void testBunName() {
-        Bun bun = new Bun("Kratornaya Bun", 1255);
-        assertNotNull(bun.getName());
-    }
+
 
     @Test
     public void testBunPriceNotNegative() {

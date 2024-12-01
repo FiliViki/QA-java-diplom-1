@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
 public class BunParameterizedTest {
-
+    public static final int DELTA = 0;
     private String testName;
     private float testPrice;
 
@@ -38,6 +38,6 @@ public class BunParameterizedTest {
     @Test
     public void testGetPrice() {
         Bun bun = new Bun(testName, testPrice);
-        assertEquals(testPrice, bun.getPrice(), 0);
+        assertEquals(testPrice, bun.getPrice(), DELTA);
     }
 }
